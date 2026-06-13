@@ -1,8 +1,7 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Eye, EyeOff, Mail, DatabaseZap } from "lucide-react";
+import { Mail, DatabaseZap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,34 +11,24 @@ import {
   registerSchema,
   RegisterFormValues,
 } from "@/validations/registerValidations";
-import { getPasswordStrength } from "@/utils/passwordStrength";
 
 export default function RegisterPage() {
   const navigate = useNavigate();
-  const [showPw, setShowPw] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false);
 
-  // Replaced manual useState fields and error object with React Hook Form, validated via Zod resolver
+  // Removed password, confirmPassword state and the show/hide toggles, form now only handles email and terms agreement
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors },
   } = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
       email: "",
-      password: "",
-      confirmPassword: "",
       agreed: false,
     },
   });
 
-  // Watch password field for live strength meter, since it is no longer plain useState
-  const password = watch("password");
-  const passwordStrength = getPasswordStrength(password || "");
-
-  // Replaced manual validation call with React Hook Form submit handler
+  // Submit handler now only sends email and agreement, password setup will be added later
   const onRegister = (data: RegisterFormValues) => {
     console.log("Register data:", data);
   };
@@ -48,7 +37,6 @@ export default function RegisterPage() {
     <div
       className="min-h-screen bg-background flex items-center justify-center relative overflow-hidden px-4 py-10"
       style={{
-        // Removed the DOT_POSITIONS array and span loop, now using background-dots.svg as page background
         backgroundImage: "url('/background-dots.svg')",
         backgroundSize: "cover",
         backgroundPosition: "center",
@@ -77,7 +65,7 @@ export default function RegisterPage() {
           Start converting schemas for free — no credit card needed.
         </p>
 
-        {/* Form wrapped with handleSubmit from React Hook Form */}
+        {/* Form now only contains the email field and terms agreement */}
         <form onSubmit={handleSubmit(onRegister)}>
           {/* Email */}
           <div className="mb-5">
@@ -108,131 +96,9 @@ export default function RegisterPage() {
             )}
           </div>
 
-          {/* Password */}
-          <div className="mb-5">
-            <Label htmlFor="password" className="mb-2 block">
-              Password
-            </Label>
+          {/* Password, confirm password, and strength meter removed, will be reintroduced later */}
 
-            <div className="relative">
-              <Input
-                id="password"
-                type={showPw ? "text" : "password"}
-                placeholder="Create a strong password"
-                className={`pr-10 ${
-                  errors.password
-                    ? "border-red-500 focus-visible:ring-red-500"
-                    : ""
-                }`}
-                {...register("password")}
-              />
-
-              <button
-                type="button"
-                onClick={() => setShowPw(!showPw)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-              >
-                {showPw ? (
-                  <EyeOff className="w-4 h-4" />
-                ) : (
-                  <Eye className="w-4 h-4" />
-                )}
-              </button>
-            </div>
-
-            {password && (
-              <div className="mt-3 rounded-lg border border-border/50 bg-background/40 p-3">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs text-muted-foreground">
-                    Password Strength
-                  </span>
-
-                  <span
-                    className={`text-xs font-medium ${
-                      passwordStrength.label === "Weak"
-                        ? "text-red-500"
-                        : passwordStrength.label === "Medium"
-                          ? "text-yellow-500"
-                          : "text-green-500"
-                    }`}
-                  >
-                    {passwordStrength.label}
-                  </span>
-                </div>
-
-                <div className="h-2 rounded-full bg-muted overflow-hidden">
-                  <div
-                    className={`h-full transition-all duration-300 ${
-                      passwordStrength.label === "Weak"
-                        ? "w-1/3 bg-red-500"
-                        : passwordStrength.label === "Medium"
-                          ? "w-2/3 bg-yellow-500"
-                          : "w-full bg-green-500"
-                    }`}
-                  />
-                </div>
-
-                {passwordStrength.label !== "Strong" && (
-                  <p className="mt-2 text-xs text-muted-foreground">
-                    Missing:
-                    {password.length < 8 && " 8+ chars,"}
-                    {!/[A-Z]/.test(password) && " uppercase,"}
-                    {!/[a-z]/.test(password) && " lowercase,"}
-                    {!/\d/.test(password) && " number,"}
-                    {!/[@$!%*?&^#()_\-+=]/.test(password) &&
-                      " special character"}
-                  </p>
-                )}
-              </div>
-            )}
-
-            {errors.password && (
-              <p className="mt-2 text-sm text-red-500">
-                {errors.password.message}
-              </p>
-            )}
-          </div>
-
-          {/* Confirm Password */}
-          <div className="mb-5">
-            <Label htmlFor="confirm" className="mb-2 block">
-              Confirm Password
-            </Label>
-
-            <div className="relative">
-              <Input
-                id="confirm"
-                type={showConfirm ? "text" : "password"}
-                placeholder="Re-enter your password"
-                className={`pr-10 ${
-                  errors.confirmPassword
-                    ? "border-red-500 focus-visible:ring-red-500"
-                    : ""
-                }`}
-                {...register("confirmPassword")}
-              />
-
-              <button
-                type="button"
-                onClick={() => setShowConfirm(!showConfirm)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-              >
-                {showConfirm ? (
-                  <EyeOff className="w-4 h-4" />
-                ) : (
-                  <Eye className="w-4 h-4" />
-                )}
-              </button>
-            </div>
-
-            {errors.confirmPassword && (
-              <p className="mt-1 text-sm text-red-500">
-                {errors.confirmPassword.message}
-              </p>
-            )}
-          </div>
-
-          {/* Terms agreement checkbox, now registered with React Hook Form instead of plain useState */}
+          {/* Terms agreement checkbox */}
           <div className="mb-5">
             <div className="flex items-center gap-2">
               <Checkbox id="agreed" {...register("agreed")} />
@@ -257,7 +123,7 @@ export default function RegisterPage() {
             size="lg"
             className="w-full text-base font-semibold mb-5"
           >
-            Create account →
+            Continue →
           </Button>
         </form>
 
@@ -268,21 +134,23 @@ export default function RegisterPage() {
           <div className="flex-1 h-px bg-border" />
         </div>
 
-        {/* Google button, icon now loaded from public/google.svg instead of inline svg */}
+        {/* Google button, icon loaded from public/google.svg */}
         <Button variant="google" size="lg" className="w-full mb-6 text-[15px]">
           <img src="/google.svg" alt="Google" className="w-[18px] h-[18px]" />
           Sign up with Google
         </Button>
 
         {/* Footer */}
+        {/* Footer, link now uses shadcn Button with link variant instead of plain button */}
         <p className="text-center text-sm text-muted-foreground">
           Already have an account?{" "}
-          <button
+          <Button
+            variant="ghost"
             onClick={() => navigate("/login")}
-            className="text-accent font-medium hover:underline"
+            className="text-accent font-medium p-0 h-auto"
           >
             Sign in
-          </button>
+          </Button>
         </p>
       </div>
     </div>
