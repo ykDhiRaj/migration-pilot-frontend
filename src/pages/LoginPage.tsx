@@ -97,7 +97,7 @@ export default function LoginPage() {
             size="lg"
             className="w-full text-base font-semibold mb-5"
           >
-            Continue →
+            Continue 
           </Button>
         </form>
 

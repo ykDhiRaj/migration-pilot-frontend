@@ -95,27 +95,7 @@ export default function RegisterPage() {
               </p>
             )}
           </div>
-
-          {/* Password, confirm password, and strength meter removed, will be reintroduced later */}
-
-          {/* Terms agreement checkbox */}
-          <div className="mb-5">
-            <div className="flex items-center gap-2">
-              <Checkbox id="agreed" {...register("agreed")} />
-              <Label
-                htmlFor="agreed"
-                className="text-muted-foreground font-normal cursor-pointer"
-              >
-                I agree to the Terms and Privacy Policy
-              </Label>
-            </div>
-
-            {errors.agreed && (
-              <p className="mt-1 text-sm text-red-500">
-                {errors.agreed.message}
-              </p>
-            )}
-          </div>
+    
 
           {/* Submit */}
           <Button
@@ -123,7 +103,7 @@ export default function RegisterPage() {
             size="lg"
             className="w-full text-base font-semibold mb-5"
           >
-            Continue →
+            Continue 
           </Button>
         </form>
 
