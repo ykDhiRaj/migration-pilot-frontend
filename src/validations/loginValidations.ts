@@ -1,25 +1,13 @@
-export interface LoginErrors {
-  email?: string;
-  password?: string;
-}
+import { z } from "zod";
 
-export const validateLogin = (
-  email: string,
-  password: string
-): LoginErrors => {
-  const errors: LoginErrors = {};
+// Replaced manual validation function with a Zod schema for login form
+export const loginSchema = z.object({
+  email: z
+    .string()
+    .min(1, "Email is required")
+    .email("Please enter a valid email address"),
+  password: z.string().min(1, "Password is required"),
+});
 
-  if (!email.trim()) {
-    errors.email = "Email is required";
-  } else if (
-    !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)
-  ) {
-    errors.email = "Please enter a valid email address";
-  }
-
-  if (!password.trim()) {
-    errors.password = "Password is required";
-  }
-
-  return errors;
-};
+// Type inferred directly from the schema, used by React Hook Form
+export type LoginFormValues = z.infer<typeof loginSchema>;
